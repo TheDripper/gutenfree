@@ -80,10 +80,7 @@ registerBlockType( 'cgb/block-oak', {
 		} = props;
 		return (
 			<div className={ props.className }>
-				<RichText 
-					tagName = "h1"
-					value={title}
-				/> 
+				<h1>{title}</h1>
 			</div>
 		);
 	},
