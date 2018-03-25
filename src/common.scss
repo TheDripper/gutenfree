@@ -11,3 +11,16 @@ $white: #f4f4f4;
 $gray: #dedede;
 $green: #bada55;
 $red: orangered;
+
+[data-align="left"] {
+	display: flex;
+}
+[data-align="right"] {
+	display: flex;
+	img {
+		order: 1;
+	}
+	p {
+		order: 2;
+	}
+}

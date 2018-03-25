@@ -8,9 +8,18 @@
 //  Import CSS.
 import './style.scss';
 import './editor.scss';
+import Classnames from 'classnames';
 
 const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType, RichText } = wp.blocks; // Import registerBlockType() from wp.blocks
+const {
+    registerBlockType,
+    RichText,
+    Editable,
+    MediaUpload,
+    BlockControls,
+    AlignmentToolbar,
+} = wp.blocks;
+
 
 /**
  * Register: aa Gutenberg Block.
@@ -26,16 +35,25 @@ const { registerBlockType, RichText } = wp.blocks; // Import registerBlockType()
  *                             registered; otherwise `undefined`.
  */
 registerBlockType( 'cgb/block-oak', {
+	title: 'oak',
 	// Block name. Block names must be string that contains a namespace prefix. Example: my-plugin/my-custom-block.
-	title: __( 'oak - CGB Block' ), // Block title.
 	icon: 'shield', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
 	category: 'common', // Block category — Group blocks together based on common traits E.g. common, formatting, layout widgets, embed.
 	attributes: {
-		title: {
+		body: {
 			type: 'array',
 			source: 'children',
-			selector: 'h1'
-		}
+			selector: '.ccBody'
+		},
+    		mediaID: {
+    		    type: 'number',
+    		},
+    		mediaURL: {
+    		    type: 'string',
+    		    source: 'attribute',
+    		    selector: 'img',
+    		    attribute: 'src',
+    		}
 	},
 	/**
 	 * The edit function describes the structure of your block in the context of the editor.
@@ -46,21 +64,50 @@ registerBlockType( 'cgb/block-oak', {
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
 	edit: function( { attributes, className, isSelected, setAttributes } ) {
-		const title = attributes.title;
-		const setTitle = value => {
-			setAttributes({title: value});
+		const { mediaID, mediaURL, body, alignment, title } = attributes;
+		const setBody = value => {
+			setAttributes({body: value});
 		}
-		// Creates a <p class='wp-block-cgb-block-oak'></p>.
-		return (
+    		const onSelectImage = media => {
+    		    setAttributes( {
+    		        mediaURL: media.url,
+    		        mediaID: media.id,
+    		    } );
+    		};
+		let classes = Classnames(alignment, 'flexx');
+		return [isSelected && (
+	    		<BlockControls key="controls">
+            		    <AlignmentToolbar
+            		        value={alignment}
+            		        onChange={( nextAlign ) => {
+            		            setAttributes( { alignment: nextAlign } );
+            		        }}
+            		    />
+            		</BlockControls>
+			),
 			<div className={ attributes.className }>
+			<span className={classes}>
+				<MediaUpload
+                    		    onSelect={onSelectImage}
+                    		    type="image"
+                    		    value={mediaID}
+		        	    render={( { open } ) => (
+                        	        <div className={mediaID ? 'image-button' : 'button button-large'} onClick={open}>
+                        	            {!mediaID ? __( 'Upload Image' ) : <img src={mediaURL} />}
+                        	        </div>
+                        	    )}
+                    		/>
 				<RichText 
-					tagName = "h1"
+					tagName = "div"
+					multiline="p"
 					placeholder={'write'}
-					onChange={setTitle}
-					value={title}
+					className="ccBody"
+					onChange={setBody}
+					value={body}
 				/> 
+			</span>
 			</div>
-		);
+		];
 	},
 
 	/**
@@ -73,14 +120,20 @@ registerBlockType( 'cgb/block-oak', {
 	 */
 	save: function( props ) {
 		const {
-			className,
-			attributes: {
-				title
-			}
-		} = props;
+        	    className,
+        	    attributes: {
+        	        mediaURL,
+        	        body,
+			alignment
+        	    }
+        	} = props;
+		let classes = Classnames(alignment, 'flexx');
 		return (
 			<div className={ props.className }>
-				<h1>{title}</h1>
+				<span className={classes}>
+                    			<img src={mediaURL} />
+					<div className="ccBody">{body}</div>
+				</span>
 			</div>
 		);
 	},

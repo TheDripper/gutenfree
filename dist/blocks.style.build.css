@@ -4,15 +4,45 @@
  * Can include things like variables and mixins
  * that are used across the project.
 */
+[data-align="left"] {
+  display: -ms-flexbox;
+  display: flex; }
+
+[data-align="right"] {
+  display: -ms-flexbox;
+  display: flex; }
+  [data-align="right"] img {
+    -ms-flex-order: 1;
+        order: 1; }
+  [data-align="right"] p {
+    -ms-flex-order: 2;
+        order: 2; }
+
 /**
  * #.# Styles
  *
  * CSS for both Frontend+Backend.
  */
-.wp-block-cgb-block-oak {
-  background: orangered;
-  border: 0.2rem solid #292929;
-  color: #292929;
-  margin: 0 auto;
-  max-width: 740px;
-  padding: 2rem; }
+.right {
+  -ms-flex-pack: end;
+      justify-content: flex-end; }
+  .right img {
+    -ms-flex-order: 2;
+        order: 2; }
+  .right .ccBody {
+    -ms-flex-order: 1;
+        order: 1; }
+
+.left {
+  -ms-flex-pack: start;
+      justify-content: flex-start; }
+
+.flexx {
+  display: -ms-flexbox;
+  display: flex; }
+
+.center {
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-align: center;
+      align-items: center; }
